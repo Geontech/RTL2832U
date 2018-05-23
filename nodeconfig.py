@@ -205,12 +205,17 @@ class NodeConfig(object):
         prfpath = os.path.join(self.rtl2832U_path, 'RTL2832U.prf.xml')
         _prf = parsers.PRFParser.parse(prfpath)
 
-	    # Set the parameters for the target_device
+        # Set the parameters for the target_device
         for struct in _prf.get_struct():
             if struct.get_name() in "target_device": 
                 for simple in struct.get_simple():
                     if simple.get_name() in self.props:
                         simple.set_value(str(self.props[simple.get_name()]))
+
+        # Set simple parameters for the device
+        for simple in _prf.get_simple():
+            if simple.get_id() in self.cmdlineProps.keys():
+                simple.set_value(str(self.cmdlineProps[simple.get_id()]))
 
         prf_out = open(prfpath, 'w')
         prf_out.write(parsers.parserconfig.getVersionXML())
